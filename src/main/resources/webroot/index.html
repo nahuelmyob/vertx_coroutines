@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dogs Instagram</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+  class DogsInstagram extends React.Component {
+
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        breed: '',
+        images : []
+      };
+
+      this.searchBreed = this.searchBreed.bind(this);
+      this.updateBreed = this.updateBreed.bind(this);
+    }
+
+    searchBreed(event) {
+      event.preventDefault();
+      $.get(`http://localhost:9000/doggo/${this.state.breed}`, data => {
+        const response = JSON.parse(data);
+        if(response.status === "success") {
+          this.setState({ images : response.message })
+        }
+      });
+    }
+
+    updateBreed(event) {
+      this.setState({breed: event.target.value, images: []})
+    }
+
+    render() {
+      return (
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col">
+              <form className="form-inline" style={{marginTop: 20, justifyContent: 'flex-end'}}>
+                <label className="sr-only" htmlFor="inlineFormInputGroup">Breed</label>
+                <div className="input-group mb-2 mr-sm-2 mb-sm-0">
+                  <div className="input-group-addon"><i className="fas fa-paw"></i></div>
+                  <input type="text" onChange={ this.updateBreed } className="form-control" id="inlineFormInputGroup"
+                         placeholder="beagle"/>
+                </div>
+                <button type="submit" className="btn btn-primary" onClick={ this.searchBreed }>Search</button>
+              </form>
+            </div>
+          </div>
+          <div className="row" style={{ marginTop : 50 }}>
+            { this.state.images.map((image, index) => (<img className="rounded" style={{margin: 10}} src={image} key={index} />)) }
+          </div>
+        </div>
+      )
+    }
+  }
+
+  ReactDOM.render(
+    <DogsInstagram/>
+    ,
+    document.getElementById('root')
+  );
+
+</script>
+</body>
+</html>
